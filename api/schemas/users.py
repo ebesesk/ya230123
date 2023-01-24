@@ -9,8 +9,8 @@ class UserCreate(BaseModel):
 class User(BaseModel):
     username: str
     # email: EmailStr
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
 
 class ShowUser(BaseModel):
     username: str

@@ -10,3 +10,5 @@ python-jose
 python-dotenv
 pymysql
 python-multipart    # Form data
+Jinja2
+# request

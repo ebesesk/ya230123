@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	<title>Login Page</title>
+
+{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<h5 class="my-3 border-bottom pb-2">로그인</h5>
+		{% if msg %}
+		<div class="alert alert-success" role="success">
+			{{ msg }}
+		</div>
+		{% endif %}
+		{% for error in errors %}
+			<div class="alert alert-danger" role="alert">
+				{{ error }}
+			</div>
+		{% endfor %}
+		<form method="post">
+			<div class="mb-3">
+				<label for="username">사용자 이름</label>
+				<input type="text" required class="form-control" name="username" aria-describedby="emailHelp">
+			</div>
+			<div class="mb-3">
+				<label for="password">비밀번호</label>
+				<input type="password" required class="form-control" name="password" >
+			</div>
+			<button type="submit" class="btn btn-primary">로그인</button>
+		</form>
+	</div>
+	<script>
+		console.log(error,'00-=0-0=')
+	</script>
+{% endblock %}

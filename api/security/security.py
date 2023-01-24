@@ -1,7 +1,7 @@
 # from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import datetime, timedelta
 
-from fastapi.security import OAuth2
+from fastapi.security import OAuth2, OAuth2PasswordBearer
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi import Request, HTTPException, status
 from fastapi.security.utils import get_authorization_scheme_param
@@ -76,13 +76,14 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
             else:
                 return None
         return param
-
+ 
 
 
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="login/token")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login/token")
 
-def get_current_user_from_token(
+def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ):
@@ -90,7 +91,6 @@ def get_current_user_from_token(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Colud not validate credentials"
     )
-    
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
@@ -100,15 +100,13 @@ def get_current_user_from_token(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = get_user(username=username, db=db)
+    user = users_crud.get_user(username=username, db=db)
     if user is None:
         raise credentials_exception
     return user
 
-def is_token(
-    db: Session,
-    token: str = Depends(oauth2_scheme),
-):
+def is_token(db: Session = Depends(get_db),
+             token: str = Depends(oauth2_scheme)):
     token = get_authorization_scheme_param(token)[1]
     try:
         payload = jwt.decode(
@@ -119,7 +117,8 @@ def is_token(
             return False
     except JWTError:
         return False
-    user = get_user(username=username, db=db)
+    user = users_crud.get_user(username=username, db=db)
     if user is None:
         return False
+    return user
     return True

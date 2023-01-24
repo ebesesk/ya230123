@@ -1,8 +1,10 @@
 from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
 
 from api.db.session import engine
 from api.db.base import Base
 from api.routes.base import router as api_routers
+from webapps.routes.base import router as webapps_routers
 
 from config import settings
 
@@ -14,6 +16,7 @@ def create_tables():
 
 def include_router(app):
     app.include_router(api_routers)
+    app.include_router(webapps_routers)
 
 def start_application():
     app = FastAPI(
@@ -25,19 +28,7 @@ def start_application():
     )
     create_tables()
     include_router(app)
+    app.mount("/static", StaticFiles(directory="static"), name="static")
     return app
 
 app = start_application()
-
-# @app.on_event("startup")
-# def startup():
-#     engine.connect()
-
-# @app.on_event("shutdown")
-# def shutdown():
-#     engine.disconnect()
-    
-# @app.middleware("http")
-# def state_insert(request: Request, call_next):
-#     request.state.db_conn = engine
-#     response = call_next(request)
